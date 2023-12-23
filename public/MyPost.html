@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Social Media</title>
+        <style>
+        .ctn {
+            border: 1px solid black;
+            display: flex;
+            justify-content: space-between;
+            font-size: 30px;
+            padding: 10px;
+            align-items: center;
+        }
+        
+        .nav {
+            display: flex;
+            width: 450px;
+            justify-content: space-around;
+        }
+        
+        .btn {
+            padding: 10px;
+            cursor: pointer;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+        }
+        
+        #search {
+            padding: 10px;
+            border-radius: 2px;
+        }
+        
+        .Username {
+            background-color: blue;
+            font-weight: 400;
+            color: aliceblue;
+            padding: 5px 14px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .logo {
+            font-weight: 800;
+        }
+        
+        .Post {
+            width: 500px;
+            background-color: brown;
+            color: white;
+            padding: 20px;
+            margin: 30px;
+            text-align: justify;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .PostTittle {
+            font-size: 25px;
+            color: white;
+        }
+        
+        .Comment {
+            display: block;
+            width: fit-content;
+            margin: 15px;
+            padding: 8px 15px;
+            font-size: 15px;
+        }
+        
+        .LikeComment {
+            display: flex;
+        }
+        
+        .Like {
+            display: block;
+            width: fit-content;
+            margin: 15px;
+            padding: 8px 15px;
+            font-size: 15px;
+        }
+        
+        .container {
+            display: flex;
+            justify-content: center;
+            margin-top: 58px;
+        }
+        
+        .MyPost {
+            overflow: auto;
+            height: 80vh;
+            width: 600px;
+            /* border: 2px solid black; */
+        }
+        
+        .AddPostctn {
+            height: fit-content;
+            width: 500px;
+            padding: 80px;
+        }
+        
+        #Title {
+            width: 418px;
+            margin: 1px;
+            padding: 5px;
+            font-size: 25px;
+        }
+        
+        #TextArea {
+            padding: 10px;
+        }
+        
+        #Addpost {
+            padding: 8px 14px;
+            background-color: rgb(62, 62, 210);
+            color: white;
+        }
+    </style>
+    </head>
+
+    <body>
+        <div class="ctn" id="ctn">
+            <div class="logo">Social Media</div>
+            <div class="nav">
+                <div class="nav-1">
+                    <input id="search" type="search" placeholder="Search...">
+                    <button class="btn">Search</button>
+                </div>
+                <div id="Username" class="Username" onclick="get()">Username</div>
+            </div>
+        </div>
+
+        <div class="container">
+
+            <div id="MyPostctn" class="MyPost"></div>
+
+            <div class="AddPostctn">
+                <h1>Create post</h1>
+                <input id="Title" type="text" placeholder="Title...">
+                <br>
+                <textarea id="TextArea" cols="50" rows="15    "
+                    placeholder="Text Here..."></textarea>
+                <br>
+                <button id="Addpost" onclick="Addpost()">Add Post</button>
+            </div>
+
+        </div>
+        <div class="cmnt"></div>
+
+        <script>
+        let xhr = new XMLHttpRequest();
+        xhr.open('GET', `./showpost?token=${localStorage.getItem('token')}`, true)
+        xhr.onload = function() {
+            console.log(this.response)
+            const a = JSON.parse(this.response)
+            document.getElementById('Username').innerHTML = a.name;
+            const Postctn = document.getElementById('MyPostctn')
+            for (let i = 0; i < a.data.length; i++) {
+                let Post = document.createElement('div')
+                Post.classList.add('Post')
+                Post.innerText = a.data[i].postdata;
+                let Tittle = document.createElement('div')
+                Tittle.classList.add('PostTittle')
+                Tittle.innerText = a.data[i].email;
+                let Comment = document.createElement('button')
+                Comment.classList.add('Comment')
+                Comment.innerText = "Comment"
+                Comment.onclick = cmnt()
+                Post.prepend(Tittle)
+                let Like = document.createElement('button')
+                Like.classList.add('Like')
+                Like.innerText = "Like"
+                let LikeComment = document.createElement('div')
+                LikeComment.classList.add('LikeComment')
+                LikeComment.append(Like, Comment)
+                Post.append(LikeComment)
+                Postctn.append(Post)
+            }
+        }
+        xhr.send();
+
+        //comment form
+
+        //Addpost
+        function Addpost() {
+            const postdata = document.getElementById('TextArea').value;
+            console.log(postdata)
+            let xhr = new XMLHttpRequest();
+            xhr.open('POST', `./postcreated?token=${localStorage.getItem('token')}&postdata=${postdata}`, true);
+            xhr.onload = function() {
+                console.log(this.response)
+                const a = JSON.parse(this.response);
+                alert(a.message);
+                window.location.reload();
+
+            }
+            xhr.send();
+        }
+    </script>
+    </body>
+
+</html>
